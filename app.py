@@ -22,10 +22,24 @@ st.header("Summary Statistics")
 st.write(iris_df.describe())
 
 # Sidebar for user interaction
-st.sidebar.header("Select Columns for Visualization")
+st.sidebar.header("Filter and Select Columns")
+
+# Map numeric target codes to species names for filtering
+species_map = dict(enumerate(iris.target_names))
+iris_df['species'] = iris_df['target'].map(species_map)
+
+# Allow the user to filter by species
+chosen_species = st.sidebar.multiselect(
+    "Filter by species:",
+    options=list(species_map.values()),
+    default=list(species_map.values())
+)
+
+# Filtered dataframe based on species selection
+filtered_df = iris_df[iris_df['species'].isin(chosen_species)]
 
 # Allow the user to select numeric columns for plotting
-numeric_columns = iris_df.select_dtypes(include=['float64', 'int64']).columns.tolist()
+numeric_columns = filtered_df.select_dtypes(include=['float64', 'int64']).columns.tolist()
 selected_columns = st.sidebar.multiselect("Choose numeric columns:", numeric_columns, default=numeric_columns[:2])
 
 # Histogram
